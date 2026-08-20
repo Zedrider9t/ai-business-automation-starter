@@ -2,24 +2,32 @@
 
 A practical, provider-agnostic TypeScript starter for building AI-assisted business workflows such as lead qualification, enquiry routing, proposal preparation, CRM handoff, and operational automation.
 
-> **Status:** Early public foundation. The project is being developed in small, reviewable increments with a branch → pull request → merge workflow.
+> **Status:** Active public foundation. Core TypeScript setup, lead qualification, tests, CI, and the first provider abstraction are in place.
 
 ## What this project is for
 
 Many AI demos stop at a chatbot. This starter focuses on business operations: take structured input, apply deterministic rules where appropriate, call an AI provider only when needed, validate the result, and return data that can be sent to a CRM, webhook, database, or automation platform.
 
+## Current capabilities
+
+- Deterministic lead qualification workflow
+- Shared typed workflow contracts
+- Provider-agnostic AI interface
+- Mock AI provider for local development and tests
+- OpenAI-compatible chat-completions adapter using `fetch`
+- Safe `.env.example` provider configuration
+- Automated tests and GitHub Actions CI
+
 ## Planned modules
 
-- Lead qualification and scoring
 - Customer enquiry classification and routing
 - Proposal brief generation
 - Structured AI outputs
-- Provider abstraction for multiple AI vendors
 - CRM / webhook handoff examples
 - n8n-friendly endpoints and payloads
 - Audit-friendly workflow results
 - Environment validation and safe secret handling
-- Tests and CI
+- API examples
 
 ## Design principles
 
@@ -30,41 +38,55 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 5. **Human review where it matters:** high-impact actions should be easy to place behind approval gates.
 6. **Composable:** modules should be usable from a CLI, API route, worker, webhook, or automation platform.
 
-## Proposed architecture
+## Architecture
 
 ```text
 src/
 ├── core/          # shared types and workflow contracts
 ├── modules/       # business automation modules
-├── providers/     # AI/provider adapters
+├── providers/     # AI provider contracts and adapters
 └── index.ts       # runnable demo entry point
 ```
 
 ## Quick start
 
-The runnable TypeScript foundation is being added through pull requests. Once the first foundation PR lands, the setup will be:
-
 ```bash
 npm install
+npm run typecheck
+npm test
 npm run dev
 ```
 
+## AI provider configuration
+
+The project defaults to safe local/mock workflows. To connect an OpenAI-compatible endpoint, copy `.env.example` to `.env` and set your own values.
+
+```env
+AI_PROVIDER=mock
+AI_MODEL=gpt-5-mini
+AI_BASE_URL=https://api.openai.com/v1
+AI_API_KEY=replace-me
+```
+
+Never commit real credentials.
+
 ## Roadmap
 
-- [ ] Core TypeScript project foundation
-- [ ] Deterministic lead qualification module
+- [x] Core TypeScript project foundation
+- [x] Deterministic lead qualification module
+- [x] AI provider interface
+- [x] OpenAI-compatible provider adapter
+- [x] Tests
+- [x] GitHub Actions CI
 - [ ] Enquiry routing module
-- [ ] AI provider interface
 - [ ] Structured proposal brief generator
 - [ ] Webhook example
-- [ ] Tests
-- [ ] GitHub Actions CI
 - [ ] API example
 - [ ] n8n integration example
 
 ## Contributing
 
-Contributions will be welcome once the initial public API stabilizes. Please open an issue before proposing large architectural changes.
+Contributions are welcome. Please open an issue before proposing large architectural changes and keep pull requests focused and testable.
 
 ## Security
 
@@ -78,4 +100,4 @@ Founder & CEO, Implement Media Solutions Pvt Ltd
 
 ## License
 
-MIT — see `LICENSE` once added to the repository.
+MIT — see `LICENSE`.
