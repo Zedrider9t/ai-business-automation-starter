@@ -2,7 +2,7 @@
 
 A practical, provider-agnostic TypeScript starter for building AI-assisted business workflows such as lead qualification, enquiry routing, proposal preparation, CRM handoff, and operational automation.
 
-> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, tests, CI, and the first provider abstraction are in place.
+> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, webhook/CRM handoff, tests, CI, and the first provider abstraction are in place.
 
 ## What this project is for
 
@@ -17,6 +17,9 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 - Structured proposal brief generation
 - Category-specific suggested scope
 - Discovery questions, assumptions and next-action guidance
+- Typed webhook / CRM handoff payloads
+- Stable idempotency keys for duplicate-safe downstream processing
+- Optional bearer-authenticated webhook delivery using native `fetch`
 - Shared typed workflow contracts
 - Provider-agnostic AI interface
 - Mock AI provider for local development and tests
@@ -28,8 +31,7 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 
 - AI-enhanced proposal content
 - Structured AI outputs
-- CRM / webhook handoff examples
-- n8n-friendly endpoints and payloads
+- n8n-friendly endpoint example
 - Audit-friendly workflow results
 - Environment validation and safe secret handling
 - API examples
@@ -43,6 +45,7 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 5. **Human review where it matters:** high-impact actions should be easy to place behind approval gates.
 6. **Composable:** modules should be usable from a CLI, API route, worker, webhook, or automation platform.
 7. **No invented commitments:** proposal briefs do not fabricate pricing, delivery dates, credentials or contractual promises.
+8. **Delivery-safe:** downstream handoffs include an idempotency key and explicit human-review state.
 
 ## Architecture
 
@@ -50,11 +53,12 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 src/
 ├── core/          # shared types and workflow contracts
 ├── modules/       # lead qualification, enquiry routing and proposal briefs
+├── integrations/  # webhook / CRM handoff helpers
 ├── providers/     # AI provider contracts and adapters
 └── index.ts       # runnable demo entry point
 ```
 
-## Proposal brief flow
+## Business workflow
 
 ```text
 Lead enquiry
@@ -65,10 +69,14 @@ Enquiry classification / routing
    ↓
 Structured proposal brief
    ↓
-Human discovery / confirmed scope
+Webhook / CRM handoff
+   ↓
+Human discovery / downstream automation
 ```
 
 The proposal brief generator produces typed business context including category, priority, lead score, suggested scope, discovery questions, assumptions, complexity and the recommended next action. It deliberately avoids inventing final pricing or delivery commitments from incomplete enquiry data.
+
+The webhook handoff helper packages the lead, qualification, routing and optional proposal brief into a versioned event envelope. It includes a stable idempotency key so CRM or n8n-style workflows can avoid processing the same enquiry twice.
 
 ## Quick start
 
@@ -102,8 +110,8 @@ Never commit real credentials.
 - [x] GitHub Actions CI
 - [x] Enquiry routing module
 - [x] Structured proposal brief generator
+- [x] Webhook / CRM handoff example
 - [ ] AI-enhanced proposal content
-- [ ] Webhook example
 - [ ] API example
 - [ ] n8n integration example
 
