@@ -1,69 +1,36 @@
 # AI Business Automation Starter
 
-A practical, provider-agnostic TypeScript starter for building AI-assisted business workflows such as lead qualification, enquiry routing, proposal preparation, CRM handoff, and operational automation.
+[![CI](https://github.com/Zedrider9t/ai-business-automation-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/Zedrider9t/ai-business-automation-starter/actions/workflows/ci.yml)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
+![Node](https://img.shields.io/badge/Node.js-%3E%3D20-green)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, AI proposal enhancement, webhook/CRM handoff, an HTTP API example, an n8n workflow example, tests, CI, and provider abstraction are in place.
+A practical, provider-agnostic TypeScript starter for AI-assisted business workflows: qualify a lead, route the enquiry, build a structured proposal brief, optionally enhance it with AI, and hand the result to an API, CRM, webhook or n8n automation.
 
-## What this project is for
+> **Current milestone:** `v0.1.0` foundation is feature-complete and release-ready pending final validation/tagging.
 
-Many AI demos stop at a chatbot. This starter focuses on business operations: take structured input, apply deterministic rules where appropriate, call an AI provider only when needed, validate the result, and return data that can be sent to a CRM, webhook, database, or automation platform.
+## Why this project exists
 
-## Current capabilities
+Many AI examples stop at a chatbot. Business automation usually needs something different: deterministic rules where reliability matters, structured data between steps, optional AI where it adds value, and explicit human review before commercial or operational commitments.
 
-- Deterministic lead qualification workflow
-- Enquiry classification and queue routing
-- Buying-intent / urgency priority detection
-- Human-review fallback for unclear enquiries
-- Structured proposal brief generation
-- AI-enhanced proposal content with validated JSON output
-- Guard against unconfirmed commercial commitments in AI-generated proposal content
-- Category-specific suggested scope
-- Discovery questions, assumptions and next-action guidance
-- Typed webhook / CRM handoff payloads
-- Stable idempotency keys for duplicate-safe downstream processing
-- Optional bearer-authenticated webhook delivery using native `fetch`
-- Native Node.js HTTP API example with health and workflow endpoints
-- Importable n8n workflow example with review/CRM branching
-- Shared typed workflow contracts
-- Provider-agnostic AI interface
-- Mock AI provider for local development and tests
-- OpenAI-compatible chat-completions adapter using `fetch`
-- Safe `.env.example` provider configuration
-- Automated tests and GitHub Actions CI
+This starter demonstrates that pattern without tying the core workflow to one model vendor, CRM or automation platform.
 
-## Planned modules
+## What is included
 
-- Audit-friendly workflow results
-- Environment validation and safe secret handling
-- Additional provider adapters and examples
+| Area | Capability |
+| --- | --- |
+| Lead handling | Deterministic lead scoring, temperature and recommended action |
+| Enquiry operations | Category classification, priority detection and queue routing |
+| Proposal workflow | Structured proposal brief, discovery questions, assumptions and complexity |
+| AI enhancement | Provider-agnostic executive summary, solution approach, risks and next-step draft |
+| AI safety | Strict JSON validation and rejection of unconfirmed pricing, guarantees or delivery promises |
+| Integration | Versioned webhook / CRM payloads and stable idempotency keys |
+| API | Native Node.js HTTP API with health and enquiry-processing endpoints |
+| n8n | Importable workflow with human-review / CRM-ready branching |
+| Providers | Mock provider and OpenAI-compatible chat-completions adapter |
+| Engineering | Strict TypeScript, automated tests and GitHub Actions CI |
 
-## Design principles
-
-1. **Business-first:** workflows should solve an operational problem, not just demonstrate an LLM.
-2. **Structured outputs:** automation should consume typed data rather than fragile free-form text.
-3. **Provider-agnostic:** core business logic should not depend on a single AI vendor.
-4. **Safe defaults:** secrets stay in environment variables and examples use non-sensitive demo data.
-5. **Human review where it matters:** high-impact actions should be easy to place behind approval gates.
-6. **Composable:** modules should be usable from a CLI, API route, worker, webhook, or automation platform.
-7. **No invented commitments:** proposal content must not fabricate pricing, delivery dates, credentials, client relationships, guarantees or contractual promises.
-8. **Delivery-safe:** downstream handoffs include an idempotency key and explicit human-review state.
-
-## Architecture
-
-```text
-src/
-├── api/           # native Node.js HTTP API example
-├── core/          # shared types and workflow contracts
-├── modules/       # qualification, routing, proposal briefs and AI enhancement
-├── integrations/  # webhook / CRM handoff helpers
-├── providers/     # AI provider contracts and adapters
-└── index.ts       # runnable demo entry point
-
-examples/
-└── n8n/           # importable automation workflow and setup guide
-```
-
-## Business workflow
+## End-to-end workflow
 
 ```text
 Lead enquiry / HTTP request / n8n webhook
@@ -81,11 +48,23 @@ Versioned webhook / CRM handoff payload
 Human review or downstream automation
 ```
 
-The deterministic proposal brief generator produces typed business context including category, priority, lead score, suggested scope, discovery questions, assumptions, complexity and the recommended next action. It deliberately avoids inventing final pricing or delivery commitments from incomplete enquiry data.
+The deterministic stages remain usable without an AI provider. AI enhancement is optional and provider output is treated as untrusted until it passes structural and commercial-safety validation.
 
-The optional AI enhancement stage receives that already-structured brief and returns validated JSON containing an executive summary, solution approach, risks/dependencies and a next-step draft. Provider output is treated as untrusted: malformed output is rejected, and generated content containing unconfirmed pricing, delivery promises or guarantees is blocked.
+## Architecture
 
-The webhook handoff helper packages the lead, qualification, routing and optional proposal brief into a versioned event envelope. It includes a stable idempotency key so CRM or n8n-style workflows can avoid processing the same enquiry twice.
+```text
+src/
+├── api/           # native Node.js HTTP API example
+├── core/          # shared types and workflow contracts
+├── integrations/  # webhook / CRM handoff helpers
+├── modules/       # qualification, routing, proposal briefs and AI enhancement
+├── providers/     # AI provider contracts and adapters
+└── index.ts       # runnable demo entry point
+
+examples/
+├── example-output.json
+└── n8n/           # importable workflow and setup guide
+```
 
 ## Quick start
 
@@ -96,15 +75,15 @@ npm test
 npm run dev
 ```
 
-## HTTP API example
-
-Start the API locally:
+Run the API example:
 
 ```bash
 npm run dev:api
 ```
 
-By default it listens on `http://localhost:3000`. Set `PORT` to use another port.
+By default the API listens on `http://localhost:3000`.
+
+## API example
 
 ### Health check
 
@@ -119,7 +98,7 @@ POST /v1/enquiries/process
 Content-Type: application/json
 ```
 
-Example payload:
+Example request:
 
 ```json
 {
@@ -136,25 +115,27 @@ Example payload:
 }
 ```
 
-The response contains the lead qualification result, enquiry routing result, structured proposal brief, and a versioned downstream handoff payload. The example intentionally does not auto-send external webhooks; delivery remains an explicit downstream action.
+The response contains the qualification result, routing result, structured proposal brief and downstream handoff envelope. A representative output is available in [`examples/example-output.json`](examples/example-output.json).
 
-## n8n integration example
+External webhook delivery is intentionally explicit rather than automatic.
 
-An importable n8n workflow is included at:
+## n8n integration
+
+Import:
 
 ```text
 examples/n8n/enquiry-processing-workflow.json
 ```
 
-It demonstrates:
+The example demonstrates:
 
-- Receiving an enquiry through an n8n webhook
-- Calling `POST /v1/enquiries/process`
-- Branching on `handoff.requiresHumanReview`
-- Preparing either a human-review item or a CRM-ready payload
-- Returning a compact webhook response with the idempotency key
+- receiving an enquiry through an n8n webhook;
+- calling `POST /v1/enquiries/process`;
+- branching on `handoff.requiresHumanReview`;
+- preparing a human-review item or CRM-ready payload;
+- propagating the idempotency key for duplicate-safe downstream processing.
 
-See `examples/n8n/README.md` for import and configuration instructions. The example ships inactive and does not contain credentials or a real CRM write operation.
+See [`examples/n8n/README.md`](examples/n8n/README.md) for setup notes. The workflow ships inactive and contains no credentials or live CRM writes.
 
 ## AI provider configuration
 
@@ -169,22 +150,37 @@ AI_API_KEY=replace-me
 
 Never commit real credentials.
 
+## Design principles
+
+1. **Business-first** — solve an operational problem, not just demonstrate an LLM.
+2. **Structured outputs** — automation consumes typed data instead of fragile free-form text.
+3. **Provider-agnostic** — business logic is not coupled to one AI vendor.
+4. **Deterministic where possible** — routine classification and routing do not require a model call.
+5. **Human review where it matters** — high-impact actions stay behind explicit confirmation points.
+6. **No invented commitments** — generated proposal content must not fabricate pricing, delivery dates, credentials, client relationships, guarantees or contractual promises.
+7. **Delivery-safe** — downstream events include stable idempotency and explicit review state.
+8. **Safe defaults** — examples contain placeholders only and external writes are opt-in.
+
 ## Roadmap
 
-- [x] Core TypeScript project foundation
-- [x] Deterministic lead qualification module
-- [x] AI provider interface
-- [x] OpenAI-compatible provider adapter
-- [x] Tests
-- [x] GitHub Actions CI
-- [x] Enquiry routing module
+- [x] Core TypeScript foundation
+- [x] Deterministic lead qualification
+- [x] Enquiry routing
 - [x] Structured proposal brief generator
-- [x] Webhook / CRM handoff example
+- [x] AI provider abstraction
+- [x] OpenAI-compatible provider adapter
+- [x] AI-enhanced proposal content with structured validation
+- [x] Webhook / CRM handoff
 - [x] HTTP API example
 - [x] n8n integration example
-- [x] AI-enhanced proposal content with structured validation
+- [x] Automated tests and CI
 - [ ] Audit-friendly workflow result envelope
-- [ ] Environment validation and safe configuration helper
+- [ ] Environment validation and configuration helper
+- [ ] Additional provider and CRM examples
+
+## Release history
+
+See [`CHANGELOG.md`](CHANGELOG.md). The first public milestone is prepared as `v0.1.0`.
 
 ## Contributing
 
@@ -192,7 +188,7 @@ Contributions are welcome. Please open an issue before proposing large architect
 
 ## Security
 
-Do not commit API keys, customer data, production credentials, private URLs, or confidential business information. Use `.env` locally and keep only safe placeholders in `.env.example`.
+Do not commit API keys, customer data, production credentials, private URLs or confidential business information. Use `.env` locally and keep only safe placeholders in `.env.example`.
 
 ## Maintainer
 
@@ -202,4 +198,4 @@ Founder & CEO, Implement Media Solutions Pvt Ltd
 
 ## License
 
-MIT — see `LICENSE`.
+MIT — see [`LICENSE`](LICENSE).

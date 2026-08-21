@@ -1,0 +1,43 @@
+{
+  "qualification": {
+    "score": 100,
+    "temperature": "hot",
+    "reasons": [
+      "High stated budget",
+      "Short delivery timeline",
+      "Company provided",
+      "Email provided",
+      "Strong buying intent"
+    ],
+    "recommendedAction": "priority-call"
+  },
+  "routing": {
+    "category": "ai-automation",
+    "priority": "high",
+    "queue": "ai-automation",
+    "matchedTerms": ["ai", "automation", "workflow"],
+    "requiresHumanReview": false
+  },
+  "proposalBrief": {
+    "title": "ai automation proposal brief for Acme Media",
+    "category": "ai-automation",
+    "priority": "high",
+    "leadScore": 100,
+    "leadTemperature": "hot",
+    "suggestedScope": [
+      "Workflow discovery",
+      "AI/provider integration",
+      "Automation orchestration",
+      "Guardrails, testing and monitoring"
+    ],
+    "complexity": "high",
+    "recommendedNextAction": "Schedule a priority discovery call and prepare a confirmed scope."
+  },
+  "handoff": {
+    "event": "business.enquiry.ready",
+    "version": "1.0",
+    "idempotencyKey": "example-stable-idempotency-key",
+    "source": "website-contact-form",
+    "requiresHumanReview": false
+  }
+}
