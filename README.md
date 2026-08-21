@@ -2,7 +2,7 @@
 
 A practical, provider-agnostic TypeScript starter for building AI-assisted business workflows such as lead qualification, enquiry routing, proposal preparation, CRM handoff, and operational automation.
 
-> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, webhook/CRM handoff, tests, CI, and the first provider abstraction are in place.
+> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, webhook/CRM handoff, an HTTP API example, tests, CI, and the first provider abstraction are in place.
 
 ## What this project is for
 
@@ -20,6 +20,7 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 - Typed webhook / CRM handoff payloads
 - Stable idempotency keys for duplicate-safe downstream processing
 - Optional bearer-authenticated webhook delivery using native `fetch`
+- Native Node.js HTTP API example with health and workflow endpoints
 - Shared typed workflow contracts
 - Provider-agnostic AI interface
 - Mock AI provider for local development and tests
@@ -31,10 +32,9 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 
 - AI-enhanced proposal content
 - Structured AI outputs
-- n8n-friendly endpoint example
+- n8n-specific integration example
 - Audit-friendly workflow results
 - Environment validation and safe secret handling
-- API examples
 
 ## Design principles
 
@@ -51,6 +51,7 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 
 ```text
 src/
+├── api/           # native Node.js HTTP API example
 ├── core/          # shared types and workflow contracts
 ├── modules/       # lead qualification, enquiry routing and proposal briefs
 ├── integrations/  # webhook / CRM handoff helpers
@@ -61,7 +62,7 @@ src/
 ## Business workflow
 
 ```text
-Lead enquiry
+Lead enquiry / HTTP request
    ↓
 Lead qualification
    ↓
@@ -69,7 +70,7 @@ Enquiry classification / routing
    ↓
 Structured proposal brief
    ↓
-Webhook / CRM handoff
+Versioned webhook / CRM handoff payload
    ↓
 Human discovery / downstream automation
 ```
@@ -86,6 +87,48 @@ npm run typecheck
 npm test
 npm run dev
 ```
+
+## HTTP API example
+
+Start the API locally:
+
+```bash
+npm run dev:api
+```
+
+By default it listens on `http://localhost:3000`. Set `PORT` to use another port.
+
+### Health check
+
+```http
+GET /health
+```
+
+### Process an enquiry
+
+```http
+POST /v1/enquiries/process
+Content-Type: application/json
+```
+
+Example payload:
+
+```json
+{
+  "subject": "AI workflow enquiry",
+  "source": "website-contact-form",
+  "lead": {
+    "name": "Asha",
+    "company": "Acme Media",
+    "email": "asha@example.com",
+    "budget": 150000,
+    "timelineDays": 30,
+    "message": "We need an urgent AI automation workflow and want a proposal."
+  }
+}
+```
+
+The response contains the lead qualification result, enquiry routing result, structured proposal brief, and a versioned downstream handoff payload. The example intentionally does not auto-send external webhooks; delivery remains an explicit downstream action.
 
 ## AI provider configuration
 
@@ -111,8 +154,8 @@ Never commit real credentials.
 - [x] Enquiry routing module
 - [x] Structured proposal brief generator
 - [x] Webhook / CRM handoff example
+- [x] HTTP API example
 - [ ] AI-enhanced proposal content
-- [ ] API example
 - [ ] n8n integration example
 
 ## Contributing
