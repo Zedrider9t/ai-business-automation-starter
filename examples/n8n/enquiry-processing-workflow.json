@@ -1,0 +1,163 @@
+{
+  "name": "AI Business Enquiry Processing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "business-enquiry",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-in",
+      "name": "Receive Enquiry",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-520, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BUSINESS_AUTOMATION_API_URL || 'http://host.docker.internal:3000/v1/enquiries/process' }}",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ subject: $json.body?.subject, source: 'n8n-webhook', lead: $json.body?.lead }) }}",
+        "options": {}
+      },
+      "id": "process-enquiry",
+      "name": "Process Enquiry",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-260, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "human-review-condition",
+              "leftValue": "={{ $json.handoff.requiresHumanReview }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "human-review",
+      "name": "Human Review Required?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "status-review",
+              "name": "workflowStatus",
+              "value": "needs-human-review",
+              "type": "string"
+            },
+            {
+              "id": "idempotency-review",
+              "name": "idempotencyKey",
+              "value": "={{ $json.handoff.idempotencyKey }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "prepare-review",
+      "name": "Prepare Review Queue Item",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [260, -120]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "status-ready",
+              "name": "workflowStatus",
+              "value": "ready-for-crm",
+              "type": "string"
+            },
+            {
+              "id": "idempotency-ready",
+              "name": "idempotencyKey",
+              "value": "={{ $json.handoff.idempotencyKey }}",
+              "type": "string"
+            },
+            {
+              "id": "category-ready",
+              "name": "category",
+              "value": "={{ $json.routing.category }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "prepare-crm",
+      "name": "Prepare CRM Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [260, 120]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, status: $json.workflowStatus, idempotencyKey: $json.idempotencyKey } }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [540, 0]
+    }
+  ],
+  "connections": {
+    "Receive Enquiry": {
+      "main": [[{"node":"Process Enquiry","type":"main","index":0}]]
+    },
+    "Process Enquiry": {
+      "main": [[{"node":"Human Review Required?","type":"main","index":0}]]
+    },
+    "Human Review Required?": {
+      "main": [
+        [{"node":"Prepare Review Queue Item","type":"main","index":0}],
+        [{"node":"Prepare CRM Payload","type":"main","index":0}]
+      ]
+    },
+    "Prepare Review Queue Item": {
+      "main": [[{"node":"Respond","type":"main","index":0}]]
+    },
+    "Prepare CRM Payload": {
+      "main": [[{"node":"Respond","type":"main","index":0}]]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "versionId": "00000000-0000-0000-0000-000000000001",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

@@ -2,7 +2,7 @@
 
 A practical, provider-agnostic TypeScript starter for building AI-assisted business workflows such as lead qualification, enquiry routing, proposal preparation, CRM handoff, and operational automation.
 
-> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, webhook/CRM handoff, an HTTP API example, tests, CI, and the first provider abstraction are in place.
+> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, webhook/CRM handoff, an HTTP API example, an n8n workflow example, tests, CI, and the first provider abstraction are in place.
 
 ## What this project is for
 
@@ -21,6 +21,7 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 - Stable idempotency keys for duplicate-safe downstream processing
 - Optional bearer-authenticated webhook delivery using native `fetch`
 - Native Node.js HTTP API example with health and workflow endpoints
+- Importable n8n workflow example with review/CRM branching
 - Shared typed workflow contracts
 - Provider-agnostic AI interface
 - Mock AI provider for local development and tests
@@ -32,7 +33,6 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 
 - AI-enhanced proposal content
 - Structured AI outputs
-- n8n-specific integration example
 - Audit-friendly workflow results
 - Environment validation and safe secret handling
 
@@ -57,12 +57,15 @@ src/
 ├── integrations/  # webhook / CRM handoff helpers
 ├── providers/     # AI provider contracts and adapters
 └── index.ts       # runnable demo entry point
+
+examples/
+└── n8n/           # importable automation workflow and setup guide
 ```
 
 ## Business workflow
 
 ```text
-Lead enquiry / HTTP request
+Lead enquiry / HTTP request / n8n webhook
    ↓
 Lead qualification
    ↓
@@ -72,7 +75,7 @@ Structured proposal brief
    ↓
 Versioned webhook / CRM handoff payload
    ↓
-Human discovery / downstream automation
+Human review or downstream automation
 ```
 
 The proposal brief generator produces typed business context including category, priority, lead score, suggested scope, discovery questions, assumptions, complexity and the recommended next action. It deliberately avoids inventing final pricing or delivery commitments from incomplete enquiry data.
@@ -130,6 +133,24 @@ Example payload:
 
 The response contains the lead qualification result, enquiry routing result, structured proposal brief, and a versioned downstream handoff payload. The example intentionally does not auto-send external webhooks; delivery remains an explicit downstream action.
 
+## n8n integration example
+
+An importable n8n workflow is included at:
+
+```text
+examples/n8n/enquiry-processing-workflow.json
+```
+
+It demonstrates:
+
+- Receiving an enquiry through an n8n webhook
+- Calling `POST /v1/enquiries/process`
+- Branching on `handoff.requiresHumanReview`
+- Preparing either a human-review item or a CRM-ready payload
+- Returning a compact webhook response with the idempotency key
+
+See `examples/n8n/README.md` for import and configuration instructions. The example ships inactive and does not contain credentials or a real CRM write operation.
+
 ## AI provider configuration
 
 The project defaults to safe local/mock workflows. To connect an OpenAI-compatible endpoint, copy `.env.example` to `.env` and set your own values.
@@ -155,8 +176,8 @@ Never commit real credentials.
 - [x] Structured proposal brief generator
 - [x] Webhook / CRM handoff example
 - [x] HTTP API example
+- [x] n8n integration example
 - [ ] AI-enhanced proposal content
-- [ ] n8n integration example
 
 ## Contributing
 
