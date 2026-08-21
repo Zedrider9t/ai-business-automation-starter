@@ -2,7 +2,7 @@
 
 A practical, provider-agnostic TypeScript starter for building AI-assisted business workflows such as lead qualification, enquiry routing, proposal preparation, CRM handoff, and operational automation.
 
-> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, webhook/CRM handoff, an HTTP API example, an n8n workflow example, tests, CI, and the first provider abstraction are in place.
+> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, AI proposal enhancement, webhook/CRM handoff, an HTTP API example, an n8n workflow example, tests, CI, and provider abstraction are in place.
 
 ## What this project is for
 
@@ -15,6 +15,8 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 - Buying-intent / urgency priority detection
 - Human-review fallback for unclear enquiries
 - Structured proposal brief generation
+- AI-enhanced proposal content with validated JSON output
+- Guard against unconfirmed commercial commitments in AI-generated proposal content
 - Category-specific suggested scope
 - Discovery questions, assumptions and next-action guidance
 - Typed webhook / CRM handoff payloads
@@ -31,10 +33,9 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 
 ## Planned modules
 
-- AI-enhanced proposal content
-- Structured AI outputs
 - Audit-friendly workflow results
 - Environment validation and safe secret handling
+- Additional provider adapters and examples
 
 ## Design principles
 
@@ -44,7 +45,7 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 4. **Safe defaults:** secrets stay in environment variables and examples use non-sensitive demo data.
 5. **Human review where it matters:** high-impact actions should be easy to place behind approval gates.
 6. **Composable:** modules should be usable from a CLI, API route, worker, webhook, or automation platform.
-7. **No invented commitments:** proposal briefs do not fabricate pricing, delivery dates, credentials or contractual promises.
+7. **No invented commitments:** proposal content must not fabricate pricing, delivery dates, credentials, client relationships, guarantees or contractual promises.
 8. **Delivery-safe:** downstream handoffs include an idempotency key and explicit human-review state.
 
 ## Architecture
@@ -53,7 +54,7 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 src/
 ├── api/           # native Node.js HTTP API example
 ├── core/          # shared types and workflow contracts
-├── modules/       # lead qualification, enquiry routing and proposal briefs
+├── modules/       # qualification, routing, proposal briefs and AI enhancement
 ├── integrations/  # webhook / CRM handoff helpers
 ├── providers/     # AI provider contracts and adapters
 └── index.ts       # runnable demo entry point
@@ -73,12 +74,16 @@ Enquiry classification / routing
    ↓
 Structured proposal brief
    ↓
+Optional AI proposal enhancement
+   ↓
 Versioned webhook / CRM handoff payload
    ↓
 Human review or downstream automation
 ```
 
-The proposal brief generator produces typed business context including category, priority, lead score, suggested scope, discovery questions, assumptions, complexity and the recommended next action. It deliberately avoids inventing final pricing or delivery commitments from incomplete enquiry data.
+The deterministic proposal brief generator produces typed business context including category, priority, lead score, suggested scope, discovery questions, assumptions, complexity and the recommended next action. It deliberately avoids inventing final pricing or delivery commitments from incomplete enquiry data.
+
+The optional AI enhancement stage receives that already-structured brief and returns validated JSON containing an executive summary, solution approach, risks/dependencies and a next-step draft. Provider output is treated as untrusted: malformed output is rejected, and generated content containing unconfirmed pricing, delivery promises or guarantees is blocked.
 
 The webhook handoff helper packages the lead, qualification, routing and optional proposal brief into a versioned event envelope. It includes a stable idempotency key so CRM or n8n-style workflows can avoid processing the same enquiry twice.
 
@@ -177,7 +182,9 @@ Never commit real credentials.
 - [x] Webhook / CRM handoff example
 - [x] HTTP API example
 - [x] n8n integration example
-- [ ] AI-enhanced proposal content
+- [x] AI-enhanced proposal content with structured validation
+- [ ] Audit-friendly workflow result envelope
+- [ ] Environment validation and safe configuration helper
 
 ## Contributing
 
