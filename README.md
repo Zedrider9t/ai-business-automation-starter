@@ -2,7 +2,7 @@
 
 A practical, provider-agnostic TypeScript starter for building AI-assisted business workflows such as lead qualification, enquiry routing, proposal preparation, CRM handoff, and operational automation.
 
-> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, tests, CI, and the first provider abstraction are in place.
+> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, structured proposal briefs, tests, CI, and the first provider abstraction are in place.
 
 ## What this project is for
 
@@ -14,6 +14,9 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 - Enquiry classification and queue routing
 - Buying-intent / urgency priority detection
 - Human-review fallback for unclear enquiries
+- Structured proposal brief generation
+- Category-specific suggested scope
+- Discovery questions, assumptions and next-action guidance
 - Shared typed workflow contracts
 - Provider-agnostic AI interface
 - Mock AI provider for local development and tests
@@ -23,7 +26,7 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 
 ## Planned modules
 
-- Proposal brief generation
+- AI-enhanced proposal content
 - Structured AI outputs
 - CRM / webhook handoff examples
 - n8n-friendly endpoints and payloads
@@ -39,16 +42,33 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 4. **Safe defaults:** secrets stay in environment variables and examples use non-sensitive demo data.
 5. **Human review where it matters:** high-impact actions should be easy to place behind approval gates.
 6. **Composable:** modules should be usable from a CLI, API route, worker, webhook, or automation platform.
+7. **No invented commitments:** proposal briefs do not fabricate pricing, delivery dates, credentials or contractual promises.
 
 ## Architecture
 
 ```text
 src/
 ├── core/          # shared types and workflow contracts
-├── modules/       # lead qualification and enquiry routing
+├── modules/       # lead qualification, enquiry routing and proposal briefs
 ├── providers/     # AI provider contracts and adapters
 └── index.ts       # runnable demo entry point
 ```
+
+## Proposal brief flow
+
+```text
+Lead enquiry
+   ↓
+Lead qualification
+   ↓
+Enquiry classification / routing
+   ↓
+Structured proposal brief
+   ↓
+Human discovery / confirmed scope
+```
+
+The proposal brief generator produces typed business context including category, priority, lead score, suggested scope, discovery questions, assumptions, complexity and the recommended next action. It deliberately avoids inventing final pricing or delivery commitments from incomplete enquiry data.
 
 ## Quick start
 
@@ -81,7 +101,8 @@ Never commit real credentials.
 - [x] Tests
 - [x] GitHub Actions CI
 - [x] Enquiry routing module
-- [ ] Structured proposal brief generator
+- [x] Structured proposal brief generator
+- [ ] AI-enhanced proposal content
 - [ ] Webhook example
 - [ ] API example
 - [ ] n8n integration example
