@@ -2,7 +2,7 @@
 
 A practical, provider-agnostic TypeScript starter for building AI-assisted business workflows such as lead qualification, enquiry routing, proposal preparation, CRM handoff, and operational automation.
 
-> **Status:** Active public foundation. Core TypeScript setup, lead qualification, tests, CI, and the first provider abstraction are in place.
+> **Status:** Active public foundation. Core TypeScript setup, lead qualification, enquiry routing, tests, CI, and the first provider abstraction are in place.
 
 ## What this project is for
 
@@ -11,6 +11,9 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 ## Current capabilities
 
 - Deterministic lead qualification workflow
+- Enquiry classification and queue routing
+- Buying-intent / urgency priority detection
+- Human-review fallback for unclear enquiries
 - Shared typed workflow contracts
 - Provider-agnostic AI interface
 - Mock AI provider for local development and tests
@@ -20,7 +23,6 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 
 ## Planned modules
 
-- Customer enquiry classification and routing
 - Proposal brief generation
 - Structured AI outputs
 - CRM / webhook handoff examples
@@ -43,7 +45,7 @@ Many AI demos stop at a chatbot. This starter focuses on business operations: ta
 ```text
 src/
 ├── core/          # shared types and workflow contracts
-├── modules/       # business automation modules
+├── modules/       # lead qualification and enquiry routing
 ├── providers/     # AI provider contracts and adapters
 └── index.ts       # runnable demo entry point
 ```
@@ -78,7 +80,7 @@ Never commit real credentials.
 - [x] OpenAI-compatible provider adapter
 - [x] Tests
 - [x] GitHub Actions CI
-- [ ] Enquiry routing module
+- [x] Enquiry routing module
 - [ ] Structured proposal brief generator
 - [ ] Webhook example
 - [ ] API example
